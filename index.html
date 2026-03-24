@@ -1,43 +1,41 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clicker</title>
+    <title>Stimulation Clicker - Original Edition</title>
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%2311ff00%22/></svg>">
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #ffffff; 
-            --secondary: #11ff00; /* El color verde que pediste */
-            --tertiary: #000000;
-            --muted-text: #555555; 
-            --shadow: rgba(0, 0, 0, 0.1);
-            --gold: #ffcc00; 
-            --diamond: #00e5ff;
+            --primary: #ffffff; --secondary: #11ff00; --tertiary: #000000;
+            --muted-text: #555555; --shadow: rgba(0, 0, 0, 0.1);
+            --gold: #ffcc00; --diamond: #00e5ff;
         }
         [data-theme="dark"] {
-            --primary: #000000; 
-            --secondary: #11ff00; 
-            --tertiary: #ffffff;
-            --muted-text: #aaaaaa; 
-            --shadow: rgba(255, 255, 255, 0.1);
+            --primary: #000000; --secondary: #11ff00; --tertiary: #ffffff;
+            --muted-text: #aaaaaa; --shadow: rgba(255, 255, 255, 0.1);
         }
         body {
-            font-family: 'Montserrat', sans-serif; 
-            background-color: var(--primary); 
-            color: var(--tertiary);
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            min-height: 100vh;
-            transition: background-color 0.3s; 
-            overflow-x: hidden;
+            font-family: 'Montserrat', sans-serif; background-color: var(--primary); color: var(--tertiary);
+            margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            transition: background-color 0.3s; overflow-x: hidden;
         }
+
+        /* --- ISLA DINÁMICA (LOGROS) --- */
+        #dynamic-island {
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+            background: var(--tertiary); color: var(--primary);
+            padding: 15px 35px; border-radius: 40px; display: flex; flex-direction: column; align-items: center; 
+            z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: top 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            min-width: 200px; text-align: center;
+        }
+        #dynamic-island.active { top: 20px; }
+        #dynamic-island .title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; margin-bottom: 4px; font-weight: 900; }
+        #dynamic-island .achievement-name { font-size: 1rem; font-weight: 800; }
 
         /* --- UI TOP --- */
         #clock { position: fixed; top: 20px; left: 20px; font-weight: 800; background: var(--primary); padding: 10px 15px; border: 3px solid var(--tertiary); border-radius: 10px; z-index: 100; }
@@ -64,13 +62,8 @@
         .shop { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 340px)); gap: 20px; width: 95%; max-width: 1200px; padding-bottom: 50px; justify-content: center; }
         .upgrade-card { background: var(--primary); border: 3px solid var(--tertiary); border-radius: 15px; padding: 15px; display: flex; flex-direction: column; gap: 10px; box-shadow: 4px 4px 0 var(--shadow); position: relative; }
         .upgrade-card.hidden { display: none !important; }
-        
-        /* Colores de progreso específicos */
         .upgrade-card.luck-type { border-color: var(--gold); }
-        .upgrade-card.luck-type .upgrade-count { background: var(--gold); color: #000; }
         .upgrade-card.diamond-type { border-color: var(--diamond); }
-        .upgrade-card.diamond-type .upgrade-count { background: var(--diamond); color: #000; }
-        
         .upgrade-count { position: absolute; top: -10px; right: -10px; background: var(--tertiary); color: var(--primary); padding: 4px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 900; }
         .upgrade-info h3 { margin: 0; font-size: 1rem; }
         .upgrade-desc { font-size: 0.75rem; color: var(--tertiary); border-top: 1px solid var(--shadow); padding-top: 8px; }
@@ -79,11 +72,18 @@
     </style>
 </head>
 <body>
+
+    <div id="dynamic-island">
+        <span class="title">Logro Desbloqueado</span>
+        <span id="achievement-name" class="achievement-name">Nombre del Logro</span>
+    </div>
+
     <div id="clock">00:00:00</div>
     <div id="total-lifetime"><small>Clicks Totales</small><span id="total-lifetime-val">0</span></div>
     <button class="theme-toggle" id="themeToggle">☀️</button>
+
     <div class="header">
-        <h1>Clicks</h1>
+        <h1>STIMULATION</h1>
         <div id="counter">0</div>
         <div class="stats">
             PPS: <span class="stat-val" id="pps-display">0</span> | PPC: <span class="stat-val" id="ppc-display">1</span> | 
@@ -91,12 +91,12 @@
         </div>
         <button class="main-btn" id="clickBtn">¡CLIC!</button>
     </div>
+
     <div class="shop" id="shop"></div>
 
     <script>
-        // --- DATA: 30 MEJORAS ---
+        // --- DATA MEJORAS ---
         const UPGRADES = [
-            // Clic (10)
             { id: 'c1', name: 'Dedo Veloz', type: 'click', baseCost: 15, value: 1, unlock: 0, mult: 1.5, desc: 'Entrena tus tendones. +1 por clic.' },
             { id: 'c2', name: 'Ratón Láser', type: 'click', baseCost: 200, value: 5, unlock: 100, mult: 1.6, desc: 'Precisión quirúrgica. +5 por clic.' },
             { id: 'c3', name: 'Guante de Cobre', type: 'click', baseCost: 1500, value: 15, unlock: 800, mult: 1.6, desc: 'Mejora la conductividad. +15 por clic.' },
@@ -107,8 +107,6 @@
             { id: 'c8', name: 'Clicker Antimateria', type: 'click', baseCost: 2500000, value: 1500, unlock: 1500000, mult: 2.0, desc: 'Desintegra el botón. +1.500 por clic.' },
             { id: 'c9', name: 'Sinfonía Dedos', type: 'click', baseCost: 10000000, value: 4000, unlock: 7000000, mult: 2.1, desc: 'Diez dedos al unísono. +4.000 por clic.' },
             { id: 'c10', name: 'La Mano de Dios', type: 'click', baseCost: 50000000, value: 10000, unlock: 30000000, mult: 2.2, desc: 'El toque supremo. +10.000 por clic.' },
-
-            // Pasivas (10)
             { id: 'p1', name: 'Auto-Clicker', type: 'passive', baseCost: 50, value: 1, unlock: 20, mult: 1.3, desc: 'Un robot básico. +1 por segundo.' },
             { id: 'p2', name: 'Mega Generador', type: 'passive', baseCost: 500, value: 10, unlock: 250, mult: 1.4, desc: 'Energía renovable. +10 por segundo.' },
             { id: 'p3', name: 'Granja de Bots', type: 'passive', baseCost: 3000, value: 50, unlock: 1500, mult: 1.4, desc: 'Red de minado. +50 por segundo.' },
@@ -119,15 +117,11 @@
             { id: 'p8', name: 'Nanobots', type: 'passive', baseCost: 10000000, value: 25000, unlock: 5000000, mult: 1.7, desc: 'Billones de obreros. +25.000 por segundo.' },
             { id: 'p9', name: 'Agujero Negro', type: 'passive', baseCost: 50000000, value: 100000, unlock: 30000000, mult: 1.8, desc: 'Succión del vacío. +100.000 por segundo.' },
             { id: 'p10', name: 'Núcleo Realidad', type: 'passive', baseCost: 250000000, value: 500000, unlock: 150000000, mult: 2.0, desc: 'El universo clica. +500.000 por segundo.' },
-
-            // Suerte Oro (5)
             { id: 'l1', name: 'Trébol Radio.', type: 'luck', baseCost: 500, value: 0.01, unlock: 200, mult: 3.0, desc: '+1% Click Dorado.' },
             { id: 'l2', name: 'Herradura Imant.', type: 'luck', baseCost: 5000, value: 0.02, unlock: 2000, mult: 3.5, desc: '+2% Click Dorado.' },
             { id: 'l3', name: 'Pata Galáctica', type: 'luck', baseCost: 50000, value: 0.03, unlock: 20000, mult: 4.0, desc: '+3% Click Dorado.' },
             { id: 'l4', name: 'Moneda Destino', type: 'luck', baseCost: 500000, value: 0.04, unlock: 200000, mult: 4.5, desc: '+4% Click Dorado.' },
             { id: 'l5', name: 'Aura de Midas', type: 'luck', baseCost: 5000000, value: 0.05, unlock: 2000000, mult: 5.0, desc: '+5% Click Dorado.' },
-
-            // Diamante (5)
             { id: 'd1', name: 'Esencia Diam.', type: 'diamond', baseCost: 10000, value: 0.001, unlock: 5000, mult: 4.0, desc: '+0.1% Click Diamante.' },
             { id: 'd2', name: 'Lente Cristal', type: 'diamond', baseCost: 100000, value: 0.002, unlock: 50000, mult: 5.0, desc: '+0.2% Click Diamante.' },
             { id: 'd3', name: 'Polvo Estelar', type: 'diamond', baseCost: 1000000, value: 0.003, unlock: 500000, mult: 6.0, desc: '+0.3% Click Diamante.' },
@@ -135,17 +129,93 @@
             { id: 'd5', name: 'Ojo Infinito', type: 'diamond', baseCost: 100000000, value: 0.005, unlock: 50000000, mult: 10.0, desc: '+0.5% Click Diamante.' }
         ];
 
-        let gameData = { points: 0, totalLifetimePoints: 0, highestPoints: 0, ppc: 1, pps: 0, luck: 0, diam: 0, costs: {}, counts: {} };
+        // --- GAME STATE ---
+        let gameData = { 
+            points: 0, 
+            totalLifetimePoints: 0, 
+            highestPoints: 0, 
+            ppc: 1, 
+            pps: 0, 
+            luck: 0, 
+            diam: 0, 
+            costs: {}, 
+            counts: {},
+            goldClicks: 0,
+            diamClicks: 0,
+            achievements: [] 
+        };
 
-        // --- CORE ---
+        const island = document.getElementById('dynamic-island');
+        const islandAchievement = document.getElementById('achievement-name');
+
+        function showAchievement(name) {
+            islandAchievement.innerText = name;
+            island.classList.add('active');
+            setTimeout(() => island.classList.remove('active'), 4500);
+        }
+
+        const pointNames = {
+            10: "Primeros Pasos",
+            100: "Ahorrador Constante",
+            1000: "Capitalista Emergente",
+            10000: "Fortuna Local",
+            100000: "Magnate de Ciudad",
+            1000000: "Socio de Élite",
+            10000000: "Imperio Global",
+            100000000: "Dominio de Mercado",
+            1000000000: "Entidad Infinita"
+        };
+
+        const goldNames = { 1: "Toque Brillante", 5: "Fiebre Amarilla", 10: "Resplandor Puro", 25: "Lingote Viviente", 50: "Legado de Midas" };
+        const diamNames = { 1: "Destello Eterno", 5: "Presión Extrema", 10: "Reflejo Perfecto", 25: "Dureza Absoluta", 50: "Corazón de Carbono" };
+
+        function checkAchievements() {
+            // Logros de Puntos
+            Object.keys(pointNames).forEach(m => {
+                let val = parseInt(m);
+                let id = `points_${val}`;
+                if (gameData.points >= val && !gameData.achievements.includes(id)) {
+                    gameData.achievements.push(id);
+                    showAchievement(pointNames[val]);
+                }
+            });
+
+            // Logros de Oro
+            Object.keys(goldNames).forEach(m => {
+                let val = parseInt(m);
+                let id = `gold_${val}`;
+                if (gameData.goldClicks >= val && !gameData.achievements.includes(id)) {
+                    gameData.achievements.push(id);
+                    showAchievement(goldNames[val]);
+                }
+            });
+
+            // Logros de Diamante
+            Object.keys(diamNames).forEach(m => {
+                let val = parseInt(m);
+                let id = `diam_${val}`;
+                if (gameData.diamClicks >= val && !gameData.achievements.includes(id)) {
+                    gameData.achievements.push(id);
+                    showAchievement(diamNames[val]);
+                }
+            });
+        }
+
         const clickBtn = document.getElementById('clickBtn');
         const counter = document.getElementById('counter');
 
         clickBtn.addEventListener('click', () => {
             const r = Math.random();
-            if (r < gameData.diam) trigger('diamond');
-            else if (r < gameData.luck) trigger('golden');
-            else add(gameData.ppc);
+            if (r < gameData.diam) {
+                gameData.diamClicks++;
+                trigger('diamond');
+            } else if (r < gameData.luck) {
+                gameData.goldClicks++;
+                trigger('golden');
+            } else {
+                add(gameData.ppc);
+            }
+            checkAchievements();
         });
 
         function trigger(type) {
@@ -200,7 +270,7 @@
         function updateUI() {
             counter.innerText = Math.floor(gameData.points).toLocaleString();
             document.getElementById('total-lifetime-val').innerText = Math.floor(gameData.totalLifetimePoints).toLocaleString();
-            document.getElementById('pps-display').innerText = gameData.pps.toLocaleString();
+            document.getElementById('pps-display').innerText = Math.floor(gameData.pps).toLocaleString();
             document.getElementById('ppc-display').innerText = gameData.ppc.toLocaleString();
             document.getElementById('luck-display').innerText = (gameData.luck * 100).toFixed(1) + "%";
             document.getElementById('diamond-display').innerText = (gameData.diam * 100).toFixed(2) + "%";
@@ -216,21 +286,22 @@
             });
         }
 
-        setInterval(() => { if(gameData.pps > 0) add(gameData.pps / 10); }, 100);
+        setInterval(() => { if(gameData.pps > 0) { add(gameData.pps / 10); checkAchievements(); } }, 100);
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-        
-        function save() { localStorage.setItem('Stim_30_Final', JSON.stringify(gameData)); }
+        function save() { localStorage.setItem('Stim_Original_Final', JSON.stringify(gameData)); }
         function load() {
-            const s = localStorage.getItem('Stim_30_Final');
-            if (s) Object.assign(gameData, JSON.parse(s));
+            const s = localStorage.getItem('Stim_Original_Final');
+            if (s) {
+                const loaded = JSON.parse(s);
+                Object.assign(gameData, loaded);
+                if (!gameData.achievements) gameData.achievements = [];
+            }
             renderShop(); updateUI();
         }
-        
         document.getElementById('themeToggle').addEventListener('click', () => {
             const d = document.body.getAttribute('data-theme') === 'dark';
             document.body.setAttribute('data-theme', d ? 'light' : 'dark');
         });
-        
         load();
     </script>
 </body>
