@@ -1,24 +1,42 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stimulation Clicker - 30 Upgrades Edition</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%2311ff00%22/></svg>">
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #ffffff; --secondary: #39ff14; --tertiary: #000000;
-            --muted-text: #555555; --shadow: rgba(0, 0, 0, 0.1);
-            --gold: #ffcc00; --diamond: #00e5ff;
+            --primary: #ffffff; 
+            --secondary: #11ff00; /* El color verde que pediste */
+            --tertiary: #000000;
+            --muted-text: #555555; 
+            --shadow: rgba(0, 0, 0, 0.1);
+            --gold: #ffcc00; 
+            --diamond: #00e5ff;
         }
         [data-theme="dark"] {
-            --primary: #000000; --secondary: #39ff14; --tertiary: #ffffff;
-            --muted-text: #aaaaaa; --shadow: rgba(255, 255, 255, 0.1);
+            --primary: #000000; 
+            --secondary: #11ff00; 
+            --tertiary: #ffffff;
+            --muted-text: #aaaaaa; 
+            --shadow: rgba(255, 255, 255, 0.1);
         }
         body {
-            font-family: 'Montserrat', sans-serif; background-color: var(--primary); color: var(--tertiary);
-            margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-            transition: background-color 0.3s; overflow-x: hidden;
+            font-family: 'Montserrat', sans-serif; 
+            background-color: var(--primary); 
+            color: var(--tertiary);
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh;
+            transition: background-color 0.3s; 
+            overflow-x: hidden;
         }
 
         /* --- UI TOP --- */
@@ -46,13 +64,14 @@
         .shop { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 340px)); gap: 20px; width: 95%; max-width: 1200px; padding-bottom: 50px; justify-content: center; }
         .upgrade-card { background: var(--primary); border: 3px solid var(--tertiary); border-radius: 15px; padding: 15px; display: flex; flex-direction: column; gap: 10px; box-shadow: 4px 4px 0 var(--shadow); position: relative; }
         .upgrade-card.hidden { display: none !important; }
+        
+        /* Colores de progreso específicos */
         .upgrade-card.luck-type { border-color: var(--gold); }
+        .upgrade-card.luck-type .upgrade-count { background: var(--gold); color: #000; }
         .upgrade-card.diamond-type { border-color: var(--diamond); }
+        .upgrade-card.diamond-type .upgrade-count { background: var(--diamond); color: #000; }
         
         .upgrade-count { position: absolute; top: -10px; right: -10px; background: var(--tertiary); color: var(--primary); padding: 4px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 900; }
-        .upgrade-card.luck-type .upgrade-count { background: var(--gold); color: #000; }
-        .upgrade-card.diamond-type .upgrade-count { background: var(--diamond); color: #000; }
-
         .upgrade-info h3 { margin: 0; font-size: 1rem; }
         .upgrade-desc { font-size: 0.75rem; color: var(--tertiary); border-top: 1px solid var(--shadow); padding-top: 8px; }
         .buy-btn { background: var(--secondary); border: 2px solid var(--tertiary); padding: 10px; border-radius: 8px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 0 var(--tertiary); }
@@ -60,11 +79,9 @@
     </style>
 </head>
 <body>
-
     <div id="clock">00:00:00</div>
     <div id="total-lifetime"><small>Clicks Totales</small><span id="total-lifetime-val">0</span></div>
     <button class="theme-toggle" id="themeToggle">☀️</button>
-
     <div class="header">
         <h1>STIMULATION</h1>
         <div id="counter">0</div>
@@ -74,7 +91,6 @@
         </div>
         <button class="main-btn" id="clickBtn">¡CLIC!</button>
     </div>
-
     <div class="shop" id="shop"></div>
 
     <script>
@@ -202,16 +218,19 @@
 
         setInterval(() => { if(gameData.pps > 0) add(gameData.pps / 10); }, 100);
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-        function save() { localStorage.setItem('Stim_30_V1', JSON.stringify(gameData)); }
+        
+        function save() { localStorage.setItem('Stim_30_Final', JSON.stringify(gameData)); }
         function load() {
-            const s = localStorage.getItem('Stim_30_V1');
+            const s = localStorage.getItem('Stim_30_Final');
             if (s) Object.assign(gameData, JSON.parse(s));
             renderShop(); updateUI();
         }
+        
         document.getElementById('themeToggle').addEventListener('click', () => {
             const d = document.body.getAttribute('data-theme') === 'dark';
             document.body.setAttribute('data-theme', d ? 'light' : 'dark');
         });
+        
         load();
     </script>
 </body>
