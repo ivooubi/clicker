@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stimulation Clicker - 30 Upgrades Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ffffff; --secondary: #39ff14; --tertiary: #000000;
+            --muted-text: #555555; --shadow: rgba(0, 0, 0, 0.1);
+            --gold: #ffcc00; --diamond: #00e5ff;
+        }
+        [data-theme="dark"] {
+            --primary: #000000; --secondary: #39ff14; --tertiary: #ffffff;
+            --muted-text: #aaaaaa; --shadow: rgba(255, 255, 255, 0.1);
+        }
+        body {
+            font-family: 'Montserrat', sans-serif; background-color: var(--primary); color: var(--tertiary);
+            margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            transition: background-color 0.3s; overflow-x: hidden;
+        }
+
+        /* --- UI TOP --- */
+        #clock { position: fixed; top: 20px; left: 20px; font-weight: 800; background: var(--primary); padding: 10px 15px; border: 3px solid var(--tertiary); border-radius: 10px; z-index: 100; }
+        #total-lifetime { position: fixed; top: 20px; right: 80px; text-align: right; z-index: 100; }
+        #total-lifetime small { display: block; font-size: 0.65rem; text-transform: uppercase; font-weight: 800; }
+        #total-lifetime span { font-size: 1.1rem; font-weight: 900; }
+        .theme-toggle { position: fixed; top: 20px; right: 20px; background: var(--primary); border: 3px solid var(--tertiary); border-radius: 50%; width: 45px; height: 45px; cursor: pointer; z-index: 101; font-size: 20px; }
+
+        /* --- HEADER & COUNTER --- */
+        .header { text-align: center; padding: 40px; margin-top: 80px; }
+        #counter { font-family: 'Nunito', sans-serif; font-size: 80px; font-weight: 800; margin: 10px 0; color: var(--secondary); -webkit-text-stroke: 2px var(--tertiary); }
+        #counter.gold-text { color: var(--gold) !important; }
+        #counter.diamond-text { color: var(--diamond) !important; }
+        .stats { font-size: 0.9rem; font-weight: 600; margin-bottom: 30px; }
+        .stat-val { color: var(--tertiary); font-weight: 800; }
+
+        /* --- MAIN BUTTON --- */
+        .main-btn { background: var(--secondary); border: 4px solid var(--tertiary); border-radius: 50%; width: 170px; height: 170px; font-family: 'Montserrat', sans-serif; font-size: 1.6rem; font-weight: 900; cursor: pointer; transition: 0.1s; box-shadow: 0 10px 0 var(--tertiary); margin-bottom: 40px; }
+        .main-btn:active { transform: translateY(8px); box-shadow: 0 2px 0 var(--tertiary); }
+        .main-btn.golden-flash { background: var(--gold) !important; transform: scale(1.1); }
+        .main-btn.diamond-flash { background: var(--diamond) !important; transform: scale(1.15); }
+
+        /* --- SHOP GRID --- */
+        .shop { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 340px)); gap: 20px; width: 95%; max-width: 1200px; padding-bottom: 50px; justify-content: center; }
+        .upgrade-card { background: var(--primary); border: 3px solid var(--tertiary); border-radius: 15px; padding: 15px; display: flex; flex-direction: column; gap: 10px; box-shadow: 4px 4px 0 var(--shadow); position: relative; }
+        .upgrade-card.hidden { display: none !important; }
+        .upgrade-card.luck-type { border-color: var(--gold); }
+        .upgrade-card.diamond-type { border-color: var(--diamond); }
+        
+        .upgrade-count { position: absolute; top: -10px; right: -10px; background: var(--tertiary); color: var(--primary); padding: 4px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 900; }
+        .upgrade-card.luck-type .upgrade-count { background: var(--gold); color: #000; }
+        .upgrade-card.diamond-type .upgrade-count { background: var(--diamond); color: #000; }
+
+        .upgrade-info h3 { margin: 0; font-size: 1rem; }
+        .upgrade-desc { font-size: 0.75rem; color: var(--tertiary); border-top: 1px solid var(--shadow); padding-top: 8px; }
+        .buy-btn { background: var(--secondary); border: 2px solid var(--tertiary); padding: 10px; border-radius: 8px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 0 var(--tertiary); }
+        .buy-btn:disabled { filter: grayscale(1); opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+    </style>
+</head>
+<body>
+
+    <div id="clock">00:00:00</div>
+    <div id="total-lifetime"><small>Clicks Totales</small><span id="total-lifetime-val">0</span></div>
+    <button class="theme-toggle" id="themeToggle">☀️</button>
+
+    <div class="header">
+        <h1>STIMULATION</h1>
+        <div id="counter">0</div>
+        <div class="stats">
+            PPS: <span class="stat-val" id="pps-display">0</span> | PPC: <span class="stat-val" id="ppc-display">1</span> | 
+            ORO: <span class="stat-val" id="luck-display">0%</span> | DIA: <span class="stat-val" id="diamond-display">0%</span>
+        </div>
+        <button class="main-btn" id="clickBtn">¡CLIC!</button>
+    </div>
+
+    <div class="shop" id="shop"></div>
+
+    <script>
+        // --- DATA: 30 MEJORAS ---
+        const UPGRADES = [
+            // Clic (10)
+            { id: 'c1', name: 'Dedo Veloz', type: 'click', baseCost: 15, value: 1, unlock: 0, mult: 1.5, desc: 'Entrena tus tendones. +1 por clic.' },
+            { id: 'c2', name: 'Ratón Láser', type: 'click', baseCost: 200, value: 5, unlock: 100, mult: 1.6, desc: 'Precisión quirúrgica. +5 por clic.' },
+            { id: 'c3', name: 'Guante de Cobre', type: 'click', baseCost: 1500, value: 15, unlock: 800, mult: 1.6, desc: 'Mejora la conductividad. +15 por clic.' },
+            { id: 'c4', name: 'Puntero Carbono', type: 'click', baseCost: 8000, value: 40, unlock: 5000, mult: 1.7, desc: 'Ligero y resistente. +40 por clic.' },
+            { id: 'c5', name: 'Doble Cuántico', type: 'click', baseCost: 40000, value: 100, unlock: 25000, mult: 1.8, desc: 'Un clic, dos realidades. +100 por clic.' },
+            { id: 'c6', name: 'Martillo Neumático', type: 'click', baseCost: 150000, value: 250, unlock: 100000, mult: 1.8, desc: 'Fuerza industrial. +250 por clic.' },
+            { id: 'c7', name: 'Reflejos Rayo', type: 'click', baseCost: 600000, value: 600, unlock: 400000, mult: 1.9, desc: 'Sistema nervioso ultra. +600 por clic.' },
+            { id: 'c8', name: 'Clicker Antimateria', type: 'click', baseCost: 2500000, value: 1500, unlock: 1500000, mult: 2.0, desc: 'Desintegra el botón. +1.500 por clic.' },
+            { id: 'c9', name: 'Sinfonía Dedos', type: 'click', baseCost: 10000000, value: 4000, unlock: 7000000, mult: 2.1, desc: 'Diez dedos al unísono. +4.000 por clic.' },
+            { id: 'c10', name: 'La Mano de Dios', type: 'click', baseCost: 50000000, value: 10000, unlock: 30000000, mult: 2.2, desc: 'El toque supremo. +10.000 por clic.' },
+
+            // Pasivas (10)
+            { id: 'p1', name: 'Auto-Clicker', type: 'passive', baseCost: 50, value: 1, unlock: 20, mult: 1.3, desc: 'Un robot básico. +1 por segundo.' },
+            { id: 'p2', name: 'Mega Generador', type: 'passive', baseCost: 500, value: 10, unlock: 250, mult: 1.4, desc: 'Energía renovable. +10 por segundo.' },
+            { id: 'p3', name: 'Granja de Bots', type: 'passive', baseCost: 3000, value: 50, unlock: 1500, mult: 1.4, desc: 'Red de minado. +50 por segundo.' },
+            { id: 'p4', name: 'Fábrica Clics', type: 'passive', baseCost: 15000, value: 200, unlock: 10000, mult: 1.5, desc: 'Producción en cadena. +200 por segundo.' },
+            { id: 'p5', name: 'Satélite Est.', type: 'passive', baseCost: 80000, value: 750, unlock: 50000, mult: 1.5, desc: 'Clics espaciales. +750 por segundo.' },
+            { id: 'p6', name: 'IA Supercomp.', type: 'passive', baseCost: 400000, value: 2500, unlock: 250000, mult: 1.6, desc: 'Optimización total. +2.500 por segundo.' },
+            { id: 'p7', name: 'Portal Clics', type: 'passive', baseCost: 2000000, value: 8000, unlock: 1000000, mult: 1.6, desc: 'Otras dimensiones. +8.000 por segundo.' },
+            { id: 'p8', name: 'Nanobots', type: 'passive', baseCost: 10000000, value: 25000, unlock: 5000000, mult: 1.7, desc: 'Billones de obreros. +25.000 por segundo.' },
+            { id: 'p9', name: 'Agujero Negro', type: 'passive', baseCost: 50000000, value: 100000, unlock: 30000000, mult: 1.8, desc: 'Succión del vacío. +100.000 por segundo.' },
+            { id: 'p10', name: 'Núcleo Realidad', type: 'passive', baseCost: 250000000, value: 500000, unlock: 150000000, mult: 2.0, desc: 'El universo clica. +500.000 por segundo.' },
+
+            // Suerte Oro (5)
+            { id: 'l1', name: 'Trébol Radio.', type: 'luck', baseCost: 500, value: 0.01, unlock: 200, mult: 3.0, desc: '+1% Click Dorado.' },
+            { id: 'l2', name: 'Herradura Imant.', type: 'luck', baseCost: 5000, value: 0.02, unlock: 2000, mult: 3.5, desc: '+2% Click Dorado.' },
+            { id: 'l3', name: 'Pata Galáctica', type: 'luck', baseCost: 50000, value: 0.03, unlock: 20000, mult: 4.0, desc: '+3% Click Dorado.' },
+            { id: 'l4', name: 'Moneda Destino', type: 'luck', baseCost: 500000, value: 0.04, unlock: 200000, mult: 4.5, desc: '+4% Click Dorado.' },
+            { id: 'l5', name: 'Aura de Midas', type: 'luck', baseCost: 5000000, value: 0.05, unlock: 2000000, mult: 5.0, desc: '+5% Click Dorado.' },
+
+            // Diamante (5)
+            { id: 'd1', name: 'Esencia Diam.', type: 'diamond', baseCost: 10000, value: 0.001, unlock: 5000, mult: 4.0, desc: '+0.1% Click Diamante.' },
+            { id: 'd2', name: 'Lente Cristal', type: 'diamond', baseCost: 100000, value: 0.002, unlock: 50000, mult: 5.0, desc: '+0.2% Click Diamante.' },
+            { id: 'd3', name: 'Polvo Estelar', type: 'diamond', baseCost: 1000000, value: 0.003, unlock: 500000, mult: 6.0, desc: '+0.3% Click Diamante.' },
+            { id: 'd4', name: 'Fragm. Vacío', type: 'diamond', baseCost: 10000000, value: 0.004, unlock: 5000000, mult: 7.0, desc: '+0.4% Click Diamante.' },
+            { id: 'd5', name: 'Ojo Infinito', type: 'diamond', baseCost: 100000000, value: 0.005, unlock: 50000000, mult: 10.0, desc: '+0.5% Click Diamante.' }
+        ];
+
+        let gameData = { points: 0, totalLifetimePoints: 0, highestPoints: 0, ppc: 1, pps: 0, luck: 0, diam: 0, costs: {}, counts: {} };
+
+        // --- CORE ---
+        const clickBtn = document.getElementById('clickBtn');
+        const counter = document.getElementById('counter');
+
+        clickBtn.addEventListener('click', () => {
+            const r = Math.random();
+            if (r < gameData.diam) trigger('diamond');
+            else if (r < gameData.luck) trigger('golden');
+            else add(gameData.ppc);
+        });
+
+        function trigger(type) {
+            let bonus = type === 'diamond' ? Math.floor(gameData.points * 0.5) + 500 : Math.floor(gameData.points * 0.2) + 100;
+            gameData.points += bonus; gameData.totalLifetimePoints += bonus;
+            const cls = type === 'diamond' ? 'diamond-flash' : 'golden-flash';
+            const txt = type === 'diamond' ? 'diamond-text' : 'gold-text';
+            clickBtn.classList.add(cls); counter.classList.add(txt);
+            setTimeout(() => { clickBtn.classList.remove(cls); counter.classList.remove(txt); }, 500);
+            updateUI();
+        }
+
+        function add(amt) {
+            gameData.points += amt; gameData.totalLifetimePoints += amt;
+            if (gameData.points > gameData.highestPoints) gameData.highestPoints = gameData.points;
+            updateUI();
+        }
+
+        function renderShop() {
+            const shop = document.getElementById('shop'); shop.innerHTML = '';
+            UPGRADES.forEach(u => {
+                if (!gameData.costs[u.id]) gameData.costs[u.id] = u.baseCost;
+                if (!gameData.counts[u.id]) gameData.counts[u.id] = 0;
+                const card = document.createElement('div');
+                card.className = `upgrade-card hidden ${u.type}-type`;
+                card.id = `card-${u.id}`;
+                card.innerHTML = `
+                    <div class="upgrade-count" id="count-${u.id}">${gameData.counts[u.id]}</div>
+                    <div class="upgrade-info"><h3>${u.name}</h3>
+                    <p>Costo: <span id="cost-${u.id}">${Math.floor(gameData.costs[u.id]).toLocaleString()}</span></p>
+                    <p class="upgrade-desc">${u.desc}</p></div>
+                    <button class="buy-btn" id="btn-${u.id}" onclick="buy('${u.id}')">Comprar</button>
+                `;
+                shop.appendChild(card);
+            });
+        }
+
+        window.buy = (id) => {
+            const u = UPGRADES.find(x => x.id === id);
+            if (gameData.points >= gameData.costs[id]) {
+                gameData.points -= gameData.costs[id];
+                gameData.counts[id]++;
+                if (u.type === 'click') gameData.ppc += u.value;
+                else if (u.type === 'passive') gameData.pps += u.value;
+                else if (u.type === 'luck') gameData.luck += u.value;
+                else if (u.type === 'diamond') gameData.diam += u.value;
+                gameData.costs[id] *= u.mult;
+                updateUI(); save();
+            }
+        };
+
+        function updateUI() {
+            counter.innerText = Math.floor(gameData.points).toLocaleString();
+            document.getElementById('total-lifetime-val').innerText = Math.floor(gameData.totalLifetimePoints).toLocaleString();
+            document.getElementById('pps-display').innerText = gameData.pps.toLocaleString();
+            document.getElementById('ppc-display').innerText = gameData.ppc.toLocaleString();
+            document.getElementById('luck-display').innerText = (gameData.luck * 100).toFixed(1) + "%";
+            document.getElementById('diamond-display').innerText = (gameData.diam * 100).toFixed(2) + "%";
+            UPGRADES.forEach(u => {
+                const c = document.getElementById(`card-${u.id}`);
+                if (c && gameData.highestPoints >= u.unlock) c.classList.remove('hidden');
+                const b = document.getElementById(`btn-${u.id}`);
+                if (b) b.disabled = gameData.points < gameData.costs[u.id];
+                const ct = document.getElementById(`cost-${u.id}`);
+                if (ct) ct.innerText = Math.floor(gameData.costs[u.id]).toLocaleString();
+                const cn = document.getElementById('count-'+u.id);
+                if (cn) cn.innerText = gameData.counts[u.id];
+            });
+        }
+
+        setInterval(() => { if(gameData.pps > 0) add(gameData.pps / 10); }, 100);
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+        function save() { localStorage.setItem('Stim_30_V1', JSON.stringify(gameData)); }
+        function load() {
+            const s = localStorage.getItem('Stim_30_V1');
+            if (s) Object.assign(gameData, JSON.parse(s));
+            renderShop(); updateUI();
+        }
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const d = document.body.getAttribute('data-theme') === 'dark';
+            document.body.setAttribute('data-theme', d ? 'light' : 'dark');
+        });
+        load();
+    </script>
+</body>
+</html>
