@@ -20,153 +20,96 @@
         body {
             font-family: 'Montserrat', sans-serif; background-color: var(--primary); color: var(--tertiary);
             margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-            transition: background-color 0.3s, color 0.3s; overflow-x: hidden;
+            transition: 0.3s; overflow-x: hidden;
         }
-
-        /* --- ELEMENTOS ABSOLUTOS --- */
-        #clock { position: absolute; top: 20px; left: 20px; font-weight: 800; border: 3px solid var(--tertiary); padding: 8px 12px; border-radius: 10px; }
-        #multiplier-display { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-weight: 900; background: var(--tertiary); color: var(--primary); padding: 10px 30px; border-radius: 0 0 20px 20px; font-size: 1.2rem; }
-        .theme-toggle { position: absolute; top: 20px; right: 20px; background: var(--primary); border: 3px solid var(--tertiary); border-radius: 50%; width: 45px; height: 45px; cursor: pointer; font-size: 20px; }
 
         /* --- ISLA DINÁMICA --- */
         #dynamic-island {
-            position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+            position: fixed; top: -220px; left: 50%; transform: translateX(-50%);
             background: var(--tertiary); color: var(--primary);
             padding: 15px 35px; border-radius: 40px; display: flex; flex-direction: column; align-items: center; 
             z-index: 5000; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            transition: top 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Animación sutil de rebote */
-            min-width: 260px; text-align: center;
+            transition: top 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-width: 280px; text-align: center;
         }
         #dynamic-island.active { top: 20px; }
         #dynamic-island .title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; color: var(--secondary); margin-bottom: 5px; }
-        #achievement-name { font-weight: 800; font-size: 1.1rem; }
 
         /* --- HEADER --- */
         .header { text-align: center; padding: 40px; margin-top: 100px; }
         #counter { font-family: 'Nunito', sans-serif; font-size: clamp(40px, 8vw, 70px); font-weight: 800; margin: 10px 0; color: var(--secondary); -webkit-text-stroke: 2px var(--tertiary); }
-        .stats { font-size: 0.95rem; font-weight: 600; margin-bottom: 30px; background: var(--shadow); padding: 10px; border-radius: 10px; }
-        .stat-val { font-weight: 900; }
-        
-        .main-btn { background: var(--secondary); border: 4px solid var(--tertiary); border-radius: 50%; width: 180px; height: 180px; font-size: 1.8rem; font-weight: 900; cursor: pointer; transition: 0.1s; box-shadow: 0 12px 0 var(--tertiary); margin-bottom: 20px; }
-        .main-btn:active { transform: translateY(10px); box-shadow: 0 2px 0 var(--tertiary); }
-        .clicks-total { font-size: 0.8rem; font-weight: 700; color: var(--muted); margin-bottom: 40px; }
+        .stats { font-size: 0.95rem; font-weight: 600; margin-bottom: 30px; background: var(--shadow); padding: 15px; border-radius: 15px; }
+        #clock { position: absolute; top: 20px; left: 20px; font-weight: 800; border: 3px solid var(--tertiary); padding: 8px 12px; border-radius: 10px; }
+        #multiplier-display { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-weight: 900; background: var(--tertiary); color: var(--primary); padding: 10px 30px; border-radius: 0 0 20px 20px; font-size: 1.1rem; }
+        .theme-toggle { position: absolute; top: 20px; right: 20px; background: var(--primary); border: 3px solid var(--tertiary); border-radius: 50%; width: 45px; height: 45px; cursor: pointer; }
 
-        /* --- TIENDA --- */
-        .shop { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; width: 95%; max-width: 1200px; padding-bottom: 100px; }
-        .upgrade-card { background: var(--primary); border: 3px solid var(--tertiary); border-radius: 15px; padding: 20px; display: none; flex-direction: column; gap: 8px; position: relative; box-shadow: 5px 5px 0 var(--shadow); transition: transform 0.2s; }
-        .upgrade-card:hover { transform: translateY(-5px); }
+        .main-btn { background: var(--secondary); border: 4px solid var(--tertiary); border-radius: 50%; width: 170px; height: 170px; font-size: 1.6rem; font-weight: 900; cursor: pointer; transition: 0.1s; box-shadow: 0 10px 0 var(--tertiary); margin-bottom: 40px; }
+        .main-btn:active { transform: translateY(8px); box-shadow: 0 2px 0 var(--tertiary); }
+
+        /* --- SHOP --- */
+        .shop { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; width: 95%; max-width: 1200px; padding-bottom: 100px; }
+        .upgrade-card { background: var(--primary); border: 3px solid var(--tertiary); border-radius: 15px; padding: 20px; display: none; flex-direction: column; gap: 8px; position: relative; }
         .upgrade-card.unlocked { display: flex; }
-        .upgrade-card.luck-type { border-color: var(--gold); }
-        .upgrade-card.diam-type { border-color: var(--diamond); }
-        
-        .upgrade-count { position: absolute; top: -12px; right: -12px; background: var(--tertiary); color: var(--primary); padding: 6px 14px; border-radius: 12px; font-size: 1rem; font-weight: 900; border: 2px solid var(--primary); }
-        .upgrade-card h3 { margin: 0; font-size: 1.1rem; text-transform: uppercase; border-bottom: 2px solid var(--shadow); padding-bottom: 5px; }
-        .upgrade-card p { margin: 2px 0; font-size: 0.85rem; }
-        .effect-text { color: var(--accent); font-weight: 800; }
-        .cost-text { font-weight: 800; font-size: 0.95rem; }
-        
-        .buy-btn { background: var(--secondary); border: 2px solid var(--tertiary); padding: 12px; border-radius: 8px; font-weight: 900; cursor: pointer; margin-top: auto; font-family: 'Montserrat'; transition: 0.2s; }
-        .buy-btn:hover:not(:disabled) { background: var(--tertiary); color: var(--primary); }
-        .buy-btn:disabled { background: var(--muted); border-color: var(--muted); color: var(--primary); cursor: not-allowed; opacity: 0.6; }
-        
-        .prestige-btn { background: var(--accent); color: white; border: 2px solid white; padding: 12px 25px; border-radius: 25px; font-weight: 900; cursor: pointer; margin-top: 15px; display: none; font-family: 'Montserrat'; text-transform: uppercase; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        
-        .gold-text { color: var(--gold) !important; }
-        .diamond-text { color: var(--diamond) !important; }
+        .upgrade-count { position: absolute; top: -10px; right: -10px; background: var(--tertiary); color: var(--primary); padding: 5px 12px; border-radius: 10px; font-weight: 900; }
+        .effect-info { color: var(--accent); font-weight: 700; font-size: 0.85rem; }
+        .buy-btn { background: var(--secondary); border: 2px solid var(--tertiary); padding: 10px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        .buy-btn:disabled { opacity: 0.5; filter: grayscale(1); }
+
+        .prestige-btn { background: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: 20px; font-weight: 900; cursor: pointer; margin-top: 10px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% {transform: scale(1)} 50% {transform: scale(1.05)} 100% {transform: scale(1)} }
     </style>
 </head>
 <body>
 
     <div id="clock">00:00:00</div>
-    <div id="multiplier-display">MULTI: x1</div>
+    <div id="multiplier-display">DIFICULTAD: NORMAL</div>
     <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
 
     <div id="dynamic-island">
         <span class="title" id="island-title">LOGRO</span>
-        <span id="achievement-name">Nombre</span>
-        <button id="prestigeBtn" class="prestige-btn" onclick="prestige()">ASCENDER (Reinicio Hardcore)</button>
+        <span id="achievement-name">Mensaje</span>
+        <button id="prestigeBtn" class="prestige-btn" onclick="prestige()">REINICIAR (ASCENSIÓN)</button>
     </div>
 
     <div class="header">
-        <h1>STIMULATION</h1>
+        <h1>Clicker</h1>
         <div id="counter">0</div>
         <div class="stats">
-            PPS: <span class="stat-val" id="pps">0</span> | PPC: <span class="stat-val" id="ppc">1</span> | 
-            ORO: <span class="stat-val" id="luck">0%</span> | DIA: <span class="stat-val" id="diam">0%</span>
+            PPS: <span id="pps">0</span> | PPC: <span id="ppc">1</span> | 
+            ORO: <span id="luck">0%</span> | DIA: <span id="diam">0%</span>
         </div>
         <button class="main-btn" id="clickBtn">¡Click!</button>
-        <div class="clicks-total">Clics Totales: <span id="total-clicks-display">0</span> / 100,000,000,000,000</div>
+        <p style="font-size: 0.8rem; opacity: 0.6;">Meta para Reinicio: 100,000,000,000,000 puntos</p>
     </div>
 
     <div class="shop" id="shop"></div>
 
     <script>
-        const PRESTIGE_LIMIT = 100000000000000; // 10 elevado a 14
+        const PRESTIGE_COST = 100000000000000; // 10^14 puntos en saldo
         let game = { 
             points: 0, highest: 0, ppc: 1, pps: 0, luck: 0, diam: 0, 
-            mult: 1, costs: {}, counts: {}, achievements: [], 
-            prestigeCount: 0, totalClicks: 0
+            costs: {}, counts: {}, achievements: [], prestigeCount: 0, totalClicks: 0
         };
 
-        // Nombres originales y temáticos
-        const NAMES = [
-            "Dron Recolector", "Matriz Cinética", "Sintetizador", "Nexo Cuántico", 
-            "Motor de Taquiones", "Cubo de Materia", "Colisionador", 
-            "Falla Dimensional", "Esfera de Dyson", "Manipulador de Realidad"
-        ];
+        const NAMES = ["Unidad de Pulso", "Sonda Cinética", "Nexo de Masa", "Núcleo Estable", "Vórtice Galáctico", "Esfera de Poder", "Generador Sigma", "Nova Artificial", "Giga Reactor", "Zenit"];
         
-        const clickMilestones = { 
-            1: "El Primer Paso", 
-            100: "Minería Constante", 
-            10000: "Dedo Biónico", 
-            1000000: "Automatización Mental" 
-        };
-
         const UPGRADES = [];
         for(let i=1; i<=100; i++) {
             let type = i % 5 === 0 ? 'luck' : (i % 8 === 0 ? 'diam' : (i % 2 === 0 ? 'passive' : 'click'));
             let base = Math.pow(i, 3.8) * 25;
-            let desc = "";
-            let val = 0;
-            let valDisp = "";
-
-            if(type === 'click') { 
-                desc = "Aumenta la potencia de extracción manual."; 
-                val = Math.pow(i, 2.2) * 1.5; 
-                valDisp = "+" + val.toFixed(1) + " PPC"; 
-            }
-            if(type === 'passive') { 
-                desc = "Genera energía de forma automática."; 
-                val = Math.pow(i, 2.2) * 1.5; 
-                valDisp = "+" + val.toFixed(1) + " PPS"; 
-            }
-            if(type === 'luck') { 
-                desc = "Mejora las anomalías doradas."; 
-                val = 0.005; // 0.5% real
-                valDisp = "+0.5% Prob. Oro"; 
-            }
-            if(type === 'diam') { 
-                desc = "Mejora las anomalías de diamante."; 
-                val = 0.0005; // 0.05% real
-                valDisp = "+0.05% Prob. Diamante"; 
-            }
+            let val = (type === 'luck') ? 0.005 : (type === 'diam' ? 0.0005 : Math.pow(i, 2.2) * 1.5);
+            let effectLabel = (type === 'click') ? `+${val.toFixed(1)} PPC` : (type === 'passive') ? `+${val.toFixed(1)} PPS` : (type === 'luck') ? "+0.5% Oro" : "+0.05% Diamante";
 
             UPGRADES.push({ 
                 id: 'u'+i, 
                 name: `${NAMES[(i-1)%10]} Mk.${Math.ceil(i/10)}`,
                 type: type, 
                 baseCost: base, 
-                desc: desc,
-                valueDisplay: valDisp,
+                desc: `Tecnología avanzada para mejorar tu producción.`,
+                effect: effectLabel,
                 value: val, 
                 unlock: base * 0.4 
             });
-        }
-
-        function updateFavicon(color) {
-            const favicon = document.getElementById('favicon');
-            favicon.href = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22${encodeURIComponent(color)}%22/></svg>`;
         }
 
         function showIsland(title, msg, isPrestige = false) {
@@ -175,107 +118,68 @@
             document.getElementById('achievement-name').innerText = msg;
             document.getElementById('prestigeBtn').style.display = isPrestige ? "block" : "none";
             island.classList.add('active');
-            
-            // Si no es prestigio, se oculta solo
-            if(!isPrestige) {
-                setTimeout(() => {
-                    // Evitar ocultar si justo alcanzó el prestigio
-                    if (game.totalClicks < PRESTIGE_LIMIT) {
-                        island.classList.remove('active');
-                    }
-                }, 4000);
-            }
+            if(!isPrestige) setTimeout(() => island.classList.remove('active'), 4000);
         }
 
-        function checkAchievements() {
-            Object.keys(clickMilestones).forEach(m => {
-                let id = `clc_${m}`;
-                if (game.totalClicks >= parseInt(m) && !game.achievements.includes(id)) {
-                    game.achievements.push(id); 
-                    showIsland("NUEVO HITO", clickMilestones[m]);
+        function checkPrestige() {
+            const island = document.getElementById('dynamic-island');
+            if(game.points >= PRESTIGE_COST) {
+                if(!island.classList.contains('active')) {
+                    showIsland("SALDO ALCANZADO", "Puedes ascender al siguiente universo", true);
                 }
-            });
-            
-            // Verificación del prestigio por clics (10^14)
-            if (game.totalClicks >= PRESTIGE_LIMIT) {
-                showIsland("TRASCENDENCIA DISPONIBLE", "Has alcanzado los límites del universo.", true);
+            } else if (island.classList.contains('active') && document.getElementById('prestigeBtn').style.display === "block") {
+                // Si gastas puntos y bajas del límite, ocultamos el botón de prestigio
+                island.classList.remove('active');
             }
         }
-
-        function trigger(type) {
-            let bonus = type === 'diamond' ? Math.floor(game.points * 0.4) : Math.floor(game.points * 0.15);
-            game.points += (bonus + 100);
-            updateFavicon(type === 'diamond' ? '#00e5ff' : '#ffcc00');
-            setTimeout(() => updateFavicon('#11ff00'), 1000);
-            const c = document.getElementById('counter');
-            c.classList.add(type === 'diamond' ? 'diamond-text' : 'gold-text');
-            setTimeout(() => c.classList.remove('diamond-text', 'gold-text'), 500);
-            updateUI();
-        }
-
-        function add(n) {
-            // Ganancias x0.5 por cada prestigio que tengas
-            let realEfficiency = Math.pow(0.5, game.prestigeCount);
-            game.points += n * realEfficiency;
-            if(game.points > game.highest) game.highest = game.points;
-            updateUI(); 
-        }
-
-        window.buy = (id) => {
-            const u = UPGRADES.find(x => x.id === id);
-            if(game.points >= game.costs[id]) {
-                game.points -= game.costs[id]; 
-                game.counts[id]++;
-                
-                if(u.type === 'click') game.ppc += u.value;
-                else if(u.type === 'passive') game.pps += u.value;
-                else if(u.type === 'luck') game.luck += u.value;
-                else if(u.type === 'diam') game.diam += u.value;
-                
-                game.costs[id] *= 1.45; // Incremento de precio estándar por compra
-                updateUI(); 
-                save();
-            }
-        };
 
         function prestige() {
+            if(game.points < PRESTIGE_COST) return;
             game.prestigeCount++;
-            game.points = 0; 
-            game.highest = 0;
-            game.ppc = 1; 
-            game.pps = 0; 
-            game.luck = 0; 
-            game.diam = 0;
-            game.totalClicks = 0;
+            game.points = 0; game.highest = 0; game.ppc = 1; game.pps = 0; game.luck = 0; game.diam = 0;
             
-            // Reiniciar y aplicar penalización de costo (x2 por prestigio)
             UPGRADES.forEach(u => {
                 game.costs[u.id] = u.baseCost * Math.pow(2, game.prestigeCount);
                 game.counts[u.id] = 0;
             });
             
             document.getElementById('dynamic-island').classList.remove('active');
-            renderShop(); 
-            updateUI(); 
-            save();
+            renderShop(); updateUI(); save();
         }
+
+        function add(n) {
+            let efficiency = Math.pow(0.5, game.prestigeCount);
+            game.points += n * efficiency;
+            if(game.points > game.highest) game.highest = game.points;
+            updateUI();
+            checkPrestige();
+        }
+
+        window.buy = (id) => {
+            const u = UPGRADES.find(x => x.id === id);
+            if(game.points >= game.costs[id]) {
+                game.points -= game.costs[id]; game.counts[id]++;
+                if(u.type === 'click') game.ppc += u.value;
+                else if(u.type === 'passive') game.pps += u.value;
+                else if(u.type === 'luck') game.luck += u.value;
+                else if(u.type === 'diam') game.diam += u.value;
+                game.costs[id] *= 1.45;
+                updateUI(); save();
+                checkPrestige();
+            }
+        };
 
         function updateUI() {
             document.getElementById('counter').innerText = Math.floor(game.points).toLocaleString();
             let visMult = Math.pow(0.5, game.prestigeCount);
-            document.getElementById('pps').innerText = Math.floor(game.pps * visMult).toLocaleString();
-            document.getElementById('ppc').innerText = (game.ppc * visMult).toFixed(1);
+            document.getElementById('pps').innerText = (game.pps * visMult).toLocaleString(undefined, {maximumFractionDigits: 1});
+            document.getElementById('ppc').innerText = (game.ppc * visMult).toLocaleString(undefined, {maximumFractionDigits: 1});
             document.getElementById('luck').innerText = (game.luck * 100).toFixed(1) + "%";
-            document.getElementById('diam').innerText = (game.diam * 100).toFixed(3) + "%";
-            document.getElementById('total-clicks-display').innerText = game.totalClicks.toLocaleString();
-            
-            // Nivel de dificultad actual
-            let multiText = game.prestigeCount === 0 ? "NORMAL" : "HARDCORE x" + game.prestigeCount;
-            document.getElementById('multiplier-display').innerText = multiText;
+            document.getElementById('diam').innerText = (game.diam * 100).toFixed(2) + "%";
+            document.getElementById('multiplier-display').innerText = game.prestigeCount > 0 ? `DIFICULTAD: HARDCORE x${game.prestigeCount}` : "DIFICULTAD: NORMAL";
 
             UPGRADES.forEach(u => {
                 const card = document.getElementById(`card-${u.id}`);
-                // Desbloqueo visual
                 if(game.highest >= (u.unlock * Math.pow(2, game.prestigeCount))) {
                     card.classList.add('unlocked');
                     document.getElementById(`btn-${u.id}`).disabled = game.points < game.costs[u.id];
@@ -288,19 +192,17 @@
         function renderShop() {
             const shop = document.getElementById('shop'); shop.innerHTML = '';
             UPGRADES.forEach(u => {
-                // Si el costo no existe en guardado, aplicar multiplicador de prestigio
                 game.costs[u.id] = game.costs[u.id] || (u.baseCost * Math.pow(2, game.prestigeCount));
                 game.counts[u.id] = game.counts[u.id] || 0;
-                
                 const div = document.createElement('div');
-                div.className = `upgrade-card ${u.type}-type`;
+                div.className = `upgrade-card`;
                 div.id = `card-${u.id}`;
                 div.innerHTML = `
                     <div class="upgrade-count" id="count-${u.id}">0</div>
                     <h3>${u.name}</h3>
                     <p>${u.desc}</p>
-                    <p class="effect-text">Efecto: ${u.valueDisplay}</p>
-                    <p class="cost-text">Costo: <span id="cost-${u.id}">0</span></p>
+                    <p class="effect-info">Efecto: ${u.effect}</p>
+                    <p>Costo: <span id="cost-${u.id}">0</span></p>
                     <button class="buy-btn" id="btn-${u.id}" onclick="buy('${u.id}')">MEJORAR</button>
                 `;
                 shop.appendChild(div);
@@ -309,33 +211,18 @@
 
         document.getElementById('clickBtn').addEventListener('click', () => {
             game.totalClicks++;
-            const r = Math.random();
-            if(r < game.diam) trigger('diamond');
-            else if(r < game.luck) trigger('golden');
-            else add(game.ppc);
-            
-            checkAchievements();
+            add(game.ppc);
         });
 
         setInterval(() => { if(game.pps > 0) add(game.pps / 10); }, 100);
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-        
-        function toggleTheme() { 
-            document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); 
-        }
-        
-        function save() { localStorage.setItem('Stim_Hardcore_V2', JSON.stringify(game)); }
+        function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); }
+        function save() { localStorage.setItem('Stim_Classic_Legacy_Points', JSON.stringify(game)); }
         function load() {
-            const s = localStorage.getItem('Stim_Hardcore_V2');
-            if(s) {
-                Object.assign(game, JSON.parse(s));
-                // Asegurar que la isla se muestre si ya se alcanzó el límite antes de recargar
-                if (game.totalClicks >= PRESTIGE_LIMIT) checkAchievements();
-            }
-            renderShop(); 
-            updateUI();
+            const s = localStorage.getItem('Stim_Classic_Legacy_Points');
+            if(s) Object.assign(game, JSON.parse(s));
+            renderShop(); updateUI();
         }
-        
         load();
     </script>
 </body>
