@@ -97,12 +97,10 @@
         let notified = new Set();
         const UPGRADES = [];
 
-        // Generación de mejoras con información de efecto
         for(let i=1; i<=100; i++) {
             let type = i % 5 === 0 ? 'luck' : (i % 8 === 0 ? 'diam' : (i % 2 === 0 ? 'passive' : 'click'));
             let base = Math.pow(i, 3.6) * 20 + (i * 10);
             let val = (i === 1) ? 1 : (i === 2 ? 1.5 : Math.pow(i, 2.1) * 1.1);
-            
             if (type === 'luck') val = 0.005;
             if (type === 'diam') val = 0.0005;
 
@@ -113,10 +111,13 @@
             });
         }
 
-        function save() { localStorage.setItem('Clicker_V9_Final', JSON.stringify(game)); }
+        function save() { 
+            localStorage.setItem('Clicker_V10_FastSave', JSON.stringify(game));
+            console.log("Juego autoguardado..."); // Verificable en la consola F12
+        }
 
         function load() {
-            const saved = localStorage.getItem('Clicker_V9_Final');
+            const saved = localStorage.getItem('Clicker_V10_FastSave');
             if(saved) game = JSON.parse(saved);
             renderShop();
             updateUI();
@@ -134,7 +135,6 @@
         function updateUI() {
             document.getElementById('counter').innerText = Math.floor(game.points).toLocaleString();
             document.getElementById('total-clicks').innerText = game.totalClicks.toLocaleString();
-            
             let visMult = Math.pow(0.5, game.prestigeCount);
             document.getElementById('pps').innerText = (game.pps * visMult).toLocaleString(undefined, {maximumFractionDigits: 1});
             document.getElementById('ppc').innerText = (game.ppc * visMult).toLocaleString(undefined, {maximumFractionDigits: 1});
@@ -145,7 +145,6 @@
             UPGRADES.forEach(u => {
                 const card = document.getElementById(`card-${u.id}`);
                 const unlockLimit = u.unlock * Math.pow(2, game.prestigeCount);
-                
                 if(game.highest >= unlockLimit) {
                     if(!notified.has(u.id)) {
                         notified.add(u.id);
@@ -160,7 +159,6 @@
                     }
                 }
             });
-
             if(game.points >= PRESTIGE_COST) showIsland("ASCENSIÓN", "¡Meta de 100 Billones!", true);
         }
 
@@ -193,8 +191,7 @@
                 else if(u.type === 'passive') game.pps += u.value;
                 else if(u.type === 'luck') game.luck += u.value;
                 else if(u.type === 'diam') game.diam += u.value;
-                
-                game.costs[id] *= 1.4; // Incremento del 40%
+                game.costs[id] *= 1.4;
                 updateUI(); save();
             }
         };
@@ -216,6 +213,9 @@
         }, 100);
 
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+        
+        // AUTOGUARDADO CADA 3 SEGUNDOS (3000ms)
+        setInterval(save, 3000);
         
         window.onload = load;
         function toggleTheme() {
