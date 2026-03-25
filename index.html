@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clicker</title>
-    <link id="favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%2311ff00%22/></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -22,45 +21,58 @@
             margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
             transition: 0.3s; overflow-x: hidden;
         }
+
+        /* Isla Dinámica */
         #dynamic-island {
-            position: fixed; top: -220px; left: 50%; transform: translateX(-50%);
-            background: var(--tertiary); color: var(--primary);
-            padding: 15px 35px; border-radius: 40px; display: flex; flex-direction: column; align-items: center; 
-            z-index: 5000; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            transition: top 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            min-width: 280px; text-align: center;
+            position: fixed; top: -250px; left: 50%; transform: translateX(-50%);
+            background: #000; color: #fff; padding: 15px 35px; border-radius: 40px;
+            display: flex; flex-direction: column; align-items: center; z-index: 5000;
+            transition: top 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55); min-width: 320px; text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
         #dynamic-island.active { top: 20px; }
-        #dynamic-island .title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; color: var(--secondary); margin-bottom: 5px; }
-        .header { text-align: center; padding: 40px; margin-top: 100px; }
-        #counter { font-family: 'Nunito', sans-serif; font-size: clamp(40px, 8vw, 70px); font-weight: 800; margin: 10px 0; color: var(--secondary); -webkit-text-stroke: 2px var(--tertiary); }
-        .stats { font-size: 0.95rem; font-weight: 600; margin-bottom: 30px; background: var(--shadow); padding: 15px; border-radius: 15px; }
-        #clock { position: absolute; top: 20px; left: 20px; font-weight: 800; border: 3px solid var(--tertiary); padding: 8px 12px; border-radius: 10px; }
-        #multiplier-display { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-weight: 900; background: var(--tertiary); color: var(--primary); padding: 10px 30px; border-radius: 0 0 20px 20px; font-size: 1.1rem; }
-        .theme-toggle { position: absolute; top: 20px; right: 20px; background: var(--primary); border: 3px solid var(--tertiary); border-radius: 50%; width: 45px; height: 45px; cursor: pointer; font-size: 1.2rem; }
-        .main-btn { background: var(--secondary); border: 4px solid var(--tertiary); border-radius: 50%; width: 170px; height: 170px; font-size: 1.6rem; font-weight: 900; cursor: pointer; transition: 0.1s; box-shadow: 0 10px 0 var(--tertiary); margin-bottom: 40px; }
-        .main-btn:active { transform: translateY(8px); box-shadow: 0 2px 0 var(--tertiary); }
-        .shop { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; width: 95%; max-width: 1200px; padding-bottom: 100px; }
-        .upgrade-card { background: var(--primary); border: 3px solid var(--tertiary); border-radius: 15px; padding: 20px; display: none; flex-direction: column; gap: 8px; position: relative; }
-        .upgrade-card.unlocked { display: flex; }
-        .upgrade-count { position: absolute; top: -10px; right: -10px; background: var(--tertiary); color: var(--primary); padding: 5px 12px; border-radius: 10px; font-weight: 900; }
-        .effect-info { color: var(--accent); font-weight: 700; font-size: 0.85rem; }
-        .buy-btn { background: var(--secondary); border: 2px solid var(--tertiary); padding: 10px; border-radius: 8px; font-weight: 800; cursor: pointer; }
-        .buy-btn:disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
-        .prestige-btn { background: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: 20px; font-weight: 900; cursor: pointer; margin-top: 10px; display: none; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% {transform: scale(1)} 50% {transform: scale(1.05)} 100% {transform: scale(1)} }
+        #dynamic-island .title { font-size: 0.7rem; color: var(--secondary); font-weight: 900; margin-bottom: 5px; letter-spacing: 2px; }
+
+        /* UI Principal */
+        .header { text-align: center; padding: 40px; margin-top: 100px; width: 100%; }
+        #counter { font-family: 'Nunito', sans-serif; font-size: clamp(45px, 9vw, 80px); font-weight: 900; color: var(--secondary); -webkit-text-stroke: 2px var(--tertiary); margin: 5px 0; }
+        
+        .stats { 
+            font-size: 0.95rem; font-weight: 700; margin-bottom: 30px; 
+            background: var(--shadow); padding: 15px 25px; border-radius: 20px; 
+            line-height: 1.6; display: inline-block;
+        }
+        
+        #clock { position: absolute; top: 20px; left: 20px; font-weight: 800; border: 3px solid var(--tertiary); padding: 8px 15px; border-radius: 12px; }
+        #multiplier-display { position: absolute; top: 0; left: 50%; transform: translateX(-50%); background: var(--tertiary); color: var(--primary); padding: 10px 40px; border-radius: 0 0 20px 20px; font-weight: 900; }
+        
+        .main-btn { background: var(--secondary); border: 5px solid var(--tertiary); border-radius: 50%; width: 170px; height: 170px; font-size: 1.8rem; font-weight: 900; cursor: pointer; transition: 0.1s; box-shadow: 0 10px 0 var(--tertiary); margin-bottom: 20px; }
+        .main-btn:active { transform: translateY(6px); box-shadow: 0 4px 0 var(--tertiary); }
+        
+        /* Tienda */
+        .shop { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 20px; width: 95%; max-width: 1200px; padding: 20px 0 100px 0; }
+        .upgrade-card { background: var(--primary); border: 3px solid var(--tertiary); border-radius: 20px; padding: 20px; display: none; flex-direction: column; gap: 8px; position: relative; }
+        .upgrade-card.unlocked { display: flex; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .upgrade-count { position: absolute; top: -12px; right: -12px; background: var(--tertiary); color: var(--primary); padding: 5px 15px; border-radius: 12px; font-weight: 900; border: 2px solid var(--secondary); }
+        .effect-info { color: var(--accent); font-weight: 800; font-size: 0.8rem; text-transform: uppercase; }
+        
+        .buy-btn { background: var(--secondary); border: 2px solid var(--tertiary); padding: 12px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .buy-btn:disabled { opacity: 0.4; filter: grayscale(1); cursor: not-allowed; }
+
+        .theme-toggle { position: absolute; top: 20px; right: 20px; background: var(--primary); border: 3px solid var(--tertiary); border-radius: 50%; width: 50px; height: 50px; cursor: pointer; font-size: 1.2rem; }
     </style>
 </head>
 <body>
-
     <div id="clock">00:00:00</div>
     <div id="multiplier-display">DIFICULTAD: NORMAL</div>
-    <button class="theme-toggle" onclick="toggleTheme()" id="theme-icon">☀️</button>
+    <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
 
     <div id="dynamic-island">
         <span class="title" id="island-title">LOGRO</span>
-        <span id="achievement-name">Mensaje</span>
-        <button id="prestigeBtn" class="prestige-btn" onclick="prestige()">REINICIAR (ASCENSIÓN)</button>
+        <span id="achievement-name">MENSAJE</span>
+        <button id="prestigeBtn" style="display:none; margin-top:10px; padding:10px 20px; background:var(--accent); color:white; border:none; border-radius:20px; font-weight:900; cursor:pointer;" onclick="prestige()">ASCENSIÓN</button>
     </div>
 
     <div class="header">
@@ -68,103 +80,104 @@
         <div id="counter">0</div>
         <div class="stats">
             PPS: <span id="pps">0</span> | PPC: <span id="ppc">1</span> | 
-            ORO: <span id="luck">0%</span> | DIA: <span id="diam">0%</span>
-        </div>
-        <button class="main-btn" id="clickBtn">¡Click!</button>
-        <p style="font-size: 0.8rem; opacity: 0.6;">Meta para Reinicio: 100 Billones</p>
+            ORO: <span id="luck">0%</span> | DIA: <span id="diam">0%</span><br>
+            <strong>CLICKS TOTALES: <span id="total-clicks">0</span></strong>
+        </div><br>
+        <button class="main-btn" id="clickBtn">¡CLICK!</button>
+        <p style="font-size: 0.8rem; opacity: 0.6; font-weight: 700;">META: 100 BILLONES</p>
     </div>
 
     <div class="shop" id="shop"></div>
 
     <script>
         const PRESTIGE_COST = 100000000000000;
-        let game = { 
-            points: 0, highest: 0, ppc: 1, pps: 0, luck: 0, diam: 0, 
-            costs: {}, counts: {}, achievements: [], prestigeCount: 0, totalClicks: 0
-        };
+        const UPGRADE_NAMES = ["Cursor de Madera", "Dedo de Hierro", "Click de Bronce", "Palanca de Vapor", "Engranaje de Cobre", "Muelle de Acero", "Presión Hidráulica", "Puntero de Carbono", "Relé Eléctrico", "Batería de Litio", "Chip de Silicio", "Fibra Óptica", "Láser de Rubí", "Antena Satelital", "Microchip Cuántico", "Nanobot Reparador", "Célula Fotovoltaica", "Motor Magnético", "Reactor de Fusión", "Núcleo de Plasma", "Pulso Electromagnético", "Red Neuronal", "IA Básica", "Algoritmo Genético", "Enlace Mental", "Realidad Aumentada", "Holograma Sólido", "Nube de Datos", "Criptonúcleo", "Bloque de Cadena", "Espejo de Antimateria", "Sonda Espacial", "Satélite Orbital", "Base Lunar", "Domos de Marte", "Minería de Asteroides", "Vela Solar", "Motor Warp", "Puente de Einstein", "Agujero de Gusano", "Esfera de Dyson", "Anillo Orbital", "Elevador Espacial", "Colonización Estelar", "Imperio Galáctico", "Energía de Vacío", "Partícula de Dios", "Cuerda Cósmica", "Materia Oscura", "Energía Oscura", "Singularidad", "Big Bang de Bolsillo", "Multiverso", "Línea Temporal", "Paradoja de Tiempo", "Viaje Temporal", "Bucle Infinito", "Dimensión 4D", "Espacio Hilbert", "Geometría Sagrada", "Conciencia Global", "Mente Colmena", "Trascendencia", "Ascensión Digital", "Cuerpo de Luz", "Código del Universo", "Matriz de Realidad", "Arquitecto de Mundos", "Forjador de Soles", "Devorador de Estrellas", "Nébula de Datos", "Púlsar Rítmico", "Quásar de Energía", "Magnetar de Pulso", "Cúmulo Estelar", "Supernova Controlada", "Galaxia Espiral", "Gran Atractor", "Vacío de Boötes", "Filamento Galáctico", "Entropía Negativa", "Orden del Caos", "Leyes de la Física", "Constante Cósmica", "Gravedad Cero", "Química Alquímica", "Esencia Vital", "Eter Luminífero", "Vibración de Cuerdas", "Teoría del Todo", "Omnisciencia", "Omnipotencia", "Eternidad", "Infinito + 1", "Más allá del Todo", "El Final del Tiempo", "Reinicio Maestro", "Arquitectura Alfa", "Omega Point", "Zenit Absoluto"];
 
-        const NAMES = ["Unidad de Pulso", "Sonda Cinética", "Nexo de Masa", "Núcleo Estable", "Vórtice Galáctico", "Esfera de Poder", "Generador Sigma", "Nova Artificial", "Giga Reactor", "Zenit"];
+        let game = { points: 0, highest: 0, ppc: 1, pps: 0, luck: 0, diam: 0, totalClicks: 0, prestigeCount: 0, costs: {}, counts: {} };
+        let notified = new Set();
         const UPGRADES = [];
-        
-        // Generar mejoras
+
+        // Generación de mejoras con información de efecto
         for(let i=1; i<=100; i++) {
             let type = i % 5 === 0 ? 'luck' : (i % 8 === 0 ? 'diam' : (i % 2 === 0 ? 'passive' : 'click'));
-            let base = Math.pow(i, 3.8) * 25;
-            let val = (type === 'luck') ? 0.005 : (type === 'diam' ? 0.0005 : Math.pow(i, 2.2) * 1.5);
-            let effectLabel = (type === 'click') ? `+${val.toFixed(1)} PPC` : (type === 'passive') ? `+${val.toFixed(1)} PPS` : (type === 'luck') ? "+0.5% Oro" : "+0.05% Diamante";
+            let base = Math.pow(i, 3.6) * 20 + (i * 10);
+            let val = (i === 1) ? 1 : (i === 2 ? 1.5 : Math.pow(i, 2.1) * 1.1);
+            
+            if (type === 'luck') val = 0.005;
+            if (type === 'diam') val = 0.0005;
 
             UPGRADES.push({ 
-                id: 'u'+i, 
-                name: `${NAMES[(i-1)%10]} Mk.${Math.ceil(i/10)}`,
-                type: type, 
-                baseCost: base, 
-                desc: `Mejora de tecnología tipo ${type}.`,
-                effect: effectLabel,
-                value: val, 
-                unlock: base * 0.4 
+                id: 'u'+i, name: UPGRADE_NAMES[i-1], type: type, baseCost: base, value: val,
+                effectText: (type === 'click') ? `+${val.toFixed(1)} PPC` : (type === 'passive') ? `+${val.toFixed(1)} PPS` : (type === 'luck') ? "+0.5% ORO" : "+0.05% DIA",
+                unlock: (i === 1) ? 0 : base * 0.35 
             });
         }
 
-        function save() {
-            localStorage.setItem('Clicker_Save_Data', JSON.stringify(game));
-            localStorage.setItem('Clicker_Theme', document.body.getAttribute('data-theme'));
-        }
+        function save() { localStorage.setItem('Clicker_V9_Final', JSON.stringify(game)); }
 
         function load() {
-            const savedData = localStorage.getItem('Clicker_Save_Data');
-            const savedTheme = localStorage.getItem('Clicker_Theme');
-            
-            if (savedData) {
-                const parsed = JSON.parse(savedData);
-                // Combinar con el objeto base para evitar errores si añades nuevas variables en el futuro
-                game = { ...game, ...parsed };
-            }
-
-            if (savedTheme) {
-                document.body.setAttribute('data-theme', savedTheme);
-                document.getElementById('theme-icon').innerText = savedTheme === 'dark' ? '🌙' : '☀️';
-            }
-
+            const saved = localStorage.getItem('Clicker_V9_Final');
+            if(saved) game = JSON.parse(saved);
             renderShop();
             updateUI();
         }
 
+        function showIsland(title, msg, isP = false) {
+            const island = document.getElementById('dynamic-island');
+            document.getElementById('island-title').innerText = title;
+            document.getElementById('achievement-name').innerText = msg;
+            document.getElementById('prestigeBtn').style.display = isP ? "block" : "none";
+            island.classList.add('active');
+            if(!isP) setTimeout(() => island.classList.remove('active'), 3500);
+        }
+
         function updateUI() {
             document.getElementById('counter').innerText = Math.floor(game.points).toLocaleString();
+            document.getElementById('total-clicks').innerText = game.totalClicks.toLocaleString();
+            
             let visMult = Math.pow(0.5, game.prestigeCount);
             document.getElementById('pps').innerText = (game.pps * visMult).toLocaleString(undefined, {maximumFractionDigits: 1});
             document.getElementById('ppc').innerText = (game.ppc * visMult).toLocaleString(undefined, {maximumFractionDigits: 1});
             document.getElementById('luck').innerText = (game.luck * 100).toFixed(1) + "%";
             document.getElementById('diam').innerText = (game.diam * 100).toFixed(2) + "%";
-            document.getElementById('multiplier-display').innerText = game.prestigeCount > 0 ? `DIFICULTAD: HARDCORE x${game.prestigeCount}` : "DIFICULTAD: NORMAL";
+            document.getElementById('multiplier-display').innerText = `DIFICULTAD: ${game.prestigeCount > 0 ? 'HARDCORE x'+game.prestigeCount : 'NORMAL'}`;
 
             UPGRADES.forEach(u => {
                 const card = document.getElementById(`card-${u.id}`);
-                if(card && game.highest >= (u.unlock * Math.pow(2, game.prestigeCount))) {
-                    card.classList.add('unlocked');
-                    const btn = document.getElementById(`btn-${u.id}`);
-                    btn.disabled = game.points < game.costs[u.id];
-                    document.getElementById(`cost-${u.id}`).innerText = Math.floor(game.costs[u.id]).toLocaleString();
-                    document.getElementById(`count-${u.id}`).innerText = game.counts[u.id] || 0;
+                const unlockLimit = u.unlock * Math.pow(2, game.prestigeCount);
+                
+                if(game.highest >= unlockLimit) {
+                    if(!notified.has(u.id)) {
+                        notified.add(u.id);
+                        if(game.highest > 0) showIsland("NUEVO PROGRESO", u.name);
+                    }
+                    if(card) {
+                        card.classList.add('unlocked');
+                        const btn = document.getElementById(`btn-${u.id}`);
+                        btn.disabled = game.points < game.costs[u.id];
+                        document.getElementById(`cost-${u.id}`).innerText = Math.floor(game.costs[u.id]).toLocaleString();
+                        document.getElementById(`count-${u.id}`).innerText = game.counts[u.id] || 0;
+                    }
                 }
             });
+
+            if(game.points >= PRESTIGE_COST) showIsland("ASCENSIÓN", "¡Meta de 100 Billones!", true);
         }
 
         function renderShop() {
-            const shop = document.getElementById('shop'); 
+            const shop = document.getElementById('shop');
             shop.innerHTML = '';
             UPGRADES.forEach(u => {
                 if(!game.costs[u.id]) game.costs[u.id] = u.baseCost * Math.pow(2, game.prestigeCount);
                 if(!game.counts[u.id]) game.counts[u.id] = 0;
-                
                 const div = document.createElement('div');
-                div.className = `upgrade-card`;
+                div.className = 'upgrade-card';
                 div.id = `card-${u.id}`;
                 div.innerHTML = `
-                    <div class="upgrade-count" id="count-${u.id}">${game.counts[u.id]}</div>
+                    <div class="upgrade-count" id="count-${u.id}">0</div>
                     <h3>${u.name}</h3>
-                    <p class="effect-info">${u.effect}</p>
-                    <p>Costo: <span id="cost-${u.id}">${Math.floor(game.costs[u.id]).toLocaleString()}</span></p>
+                    <p class="effect-info">${u.effectText}</p>
+                    <p>Costo: <span id="cost-${u.id}">0</span></p>
                     <button class="buy-btn" id="btn-${u.id}" onclick="buy('${u.id}')">MEJORAR</button>
                 `;
                 shop.appendChild(div);
@@ -174,83 +187,41 @@
         window.buy = (id) => {
             const u = UPGRADES.find(x => x.id === id);
             if(game.points >= game.costs[id]) {
-                game.points -= game.costs[id]; 
+                game.points -= game.costs[id];
                 game.counts[id]++;
                 if(u.type === 'click') game.ppc += u.value;
                 else if(u.type === 'passive') game.pps += u.value;
                 else if(u.type === 'luck') game.luck += u.value;
                 else if(u.type === 'diam') game.diam += u.value;
                 
-                game.costs[id] *= 1.45;
-                updateUI();
-                checkPrestige();
-                save(); // Guardar al comprar
+                game.costs[id] *= 1.4; // Incremento del 40%
+                updateUI(); save();
             }
         };
 
-        function add(n) {
-            let efficiency = Math.pow(0.5, game.prestigeCount);
-            game.points += n * efficiency;
+        document.getElementById('clickBtn').onclick = () => {
+            game.totalClicks++;
+            let power = game.ppc * Math.pow(0.5, game.prestigeCount);
+            game.points += power;
             if(game.points > game.highest) game.highest = game.points;
             updateUI();
-            checkPrestige();
-        }
+        };
 
-        function prestige() {
-            if(game.points < PRESTIGE_COST) return;
-            game.prestigeCount++;
-            game.points = 0; game.highest = 0; game.ppc = 1; game.pps = 0; game.luck = 0; game.diam = 0;
-            
-            UPGRADES.forEach(u => {
-                game.costs[u.id] = u.baseCost * Math.pow(2, game.prestigeCount);
-                game.counts[u.id] = 0;
-            });
-            
-            document.getElementById('dynamic-island').classList.remove('active');
-            renderShop(); updateUI(); save();
-        }
-
-        function showIsland(title, msg, isPrestige = false) {
-            const island = document.getElementById('dynamic-island');
-            document.getElementById('island-title').innerText = title;
-            document.getElementById('achievement-name').innerText = msg;
-            document.getElementById('prestigeBtn').style.display = isPrestige ? "block" : "none";
-            island.classList.add('active');
-            if(!isPrestige) setTimeout(() => island.classList.remove('active'), 4000);
-        }
-
-        function checkPrestige() {
-            const island = document.getElementById('dynamic-island');
-            if(game.points >= PRESTIGE_COST) {
-                if(!island.classList.contains('active')) {
-                    showIsland("¡ASCENSIÓN DISPONIBLE!", "Tienes suficiente energía", true);
-                }
+        setInterval(() => {
+            if(game.pps > 0) {
+                game.points += (game.pps * Math.pow(0.5, game.prestigeCount)) / 10;
+                if(game.points > game.highest) game.highest = game.points;
+                updateUI();
             }
-        }
+        }, 100);
 
-        function toggleTheme() {
-            const current = document.body.getAttribute('data-theme');
-            const target = current === 'dark' ? 'light' : 'dark';
-            document.body.setAttribute('data-theme', target);
-            document.getElementById('theme-icon').innerText = target === 'dark' ? '🌙' : '☀️';
-            save();
-        }
-
-        // Eventos
-        document.getElementById('clickBtn').addEventListener('click', () => {
-            game.totalClicks++;
-            add(game.ppc);
-        });
-
-        // Bucles de tiempo
-        setInterval(() => { if(game.pps > 0) add(game.pps / 10); }, 100);
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
         
-        // --- AUTOGUARDADO CADA 5 SEGUNDOS ---
-        setInterval(save, 5000);
-
-        // Inicializar
-        load();
+        window.onload = load;
+        function toggleTheme() {
+            const t = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', t);
+        }
     </script>
 </body>
 </html>
