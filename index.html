@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clicker</title>
+    <title>Clicker Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -21,7 +21,6 @@
             margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
             transition: 0.3s; overflow-x: hidden;
         }
-
         /* Isla Dinámica */
         #dynamic-island {
             position: fixed; top: -250px; left: 50%; transform: translateX(-50%);
@@ -113,12 +112,16 @@
 
         function save() { 
             localStorage.setItem('Clicker_V10_FastSave', JSON.stringify(game));
-            console.log("Juego autoguardado..."); // Verificable en la consola F12
         }
 
         function load() {
             const saved = localStorage.getItem('Clicker_V10_FastSave');
-            if(saved) game = JSON.parse(saved);
+            if(saved) {
+                game = JSON.parse(saved);
+                // Validación para evitar errores si las propiedades no existen en el save
+                if (game.luck === undefined) game.luck = 0;
+                if (game.diam === undefined) game.diam = 0;
+            }
             renderShop();
             updateUI();
         }
@@ -153,9 +156,11 @@
                     if(card) {
                         card.classList.add('unlocked');
                         const btn = document.getElementById(`btn-${u.id}`);
-                        btn.disabled = game.points < game.costs[u.id];
-                        document.getElementById(`cost-${u.id}`).innerText = Math.floor(game.costs[u.id]).toLocaleString();
-                        document.getElementById(`count-${u.id}`).innerText = game.counts[u.id] || 0;
+                        if(btn) btn.disabled = game.points < game.costs[u.id];
+                        const costEl = document.getElementById(`cost-${u.id}`);
+                        const countEl = document.getElementById(`count-${u.id}`);
+                        if(costEl) costEl.innerText = Math.floor(game.costs[u.id]).toLocaleString();
+                        if(countEl) countEl.innerText = game.counts[u.id] || 0;
                     }
                 }
             });
@@ -199,6 +204,18 @@
         document.getElementById('clickBtn').onclick = () => {
             game.totalClicks++;
             let power = game.ppc * Math.pow(0.5, game.prestigeCount);
+            
+            // --- CORRECCIÓN PORCENTAJES ORO Y DIAMANTE ---
+            let roll = Math.random();
+            if (roll < game.diam) { 
+                power *= 10; // Crítico de Diamante
+                console.log("¡DIAMANTE!");
+            } else if (roll < game.luck) { 
+                power *= 3;  // Crítico de Oro
+                console.log("¡ORO!");
+            }
+            // --------------------------------------------
+
             game.points += power;
             if(game.points > game.highest) game.highest = game.points;
             updateUI();
@@ -213,11 +230,9 @@
         }, 100);
 
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-        
-        // AUTOGUARDADO CADA 3 SEGUNDOS (3000ms)
         setInterval(save, 3000);
-        
         window.onload = load;
+
         function toggleTheme() {
             const t = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             document.body.setAttribute('data-theme', t);
